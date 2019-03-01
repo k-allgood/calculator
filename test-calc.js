@@ -53,6 +53,7 @@ allButtons.addEventListener("click", function (e) {
 
     if (pressed.classList.contains("equals")) {
     	equals(pressed.value);
+    	history();
     	update();
     	return;
     }
@@ -78,6 +79,18 @@ allButtons.addEventListener("click", function (e) {
 
 function showDigit(digit) {
 	const displayValue = calculator.displayValue;
+	//If an answer is displayed check for a second number, and flag calculated as false
+	if (calculator.calculated === true) {
+		if (calculator.checkForSecondNum === true) {
+			calculator.calculated = false;
+		} else {
+		//if answer is displayed, but we are not waiting on the secondNum, append digit to firstNum
+		calculator.calculated = false;
+		calculator.firstNum = digit;
+		calculator.displayValue = calculator.firstNum;
+		return;
+		}
+	}
 
 	if (calculator.checkForSecondNum === true) {
 
@@ -97,7 +110,8 @@ function showDigit(digit) {
 			calculator.secondNum = displayValue.split("÷")[1]; //numbers afer sign
 		}
 	}
-	//If the display is 0, display the pressed number instead, other append the next number
+
+	//If the display is 0, display the pressed number instead, otherwise append the next number
 	if (displayValue === "0") {
 		calculator.displayValue = digit;
 		calculator.firstNum = digit;
@@ -142,7 +156,6 @@ function addDecimal(decimal) {
 		}
 
 		calculator.displayValue = displayValue += decimal;
-		//calculator.secondNum = displayValue.substring(0, displayValue.indexOf(".")); //numbers before sign
 		calculator.secondNum = displayValue += decimal;
 	}
 
@@ -173,6 +186,7 @@ function equals() {
 		answer = parseFloat(calculator.firstNum) + parseFloat(calculator.secondNum); //converts to numbers and evaluates
 		calculator.displayValue = answer;
 		calculator.checkForSecondNum = false;
+		calculator.calculated = true;
 		return;
 	}
 
@@ -182,6 +196,7 @@ function equals() {
 		answer = parseFloat(calculator.firstNum) - parseFloat(calculator.secondNum); //converts to numbers and evaluates
 		calculator.displayValue = answer;
 		calculator.checkForSecondNum = false;
+		calculator.calculated = true;
 		return;
 	}
 
@@ -191,6 +206,7 @@ function equals() {
 		answer = parseFloat(calculator.firstNum) * parseFloat(calculator.secondNum); //converts to numbers and evaluates
 		calculator.displayValue = answer;
 		calculator.checkForSecondNum = false;
+		calculator.calculated = true;
 		return;
 	}
 
@@ -200,6 +216,7 @@ function equals() {
 		answer = parseFloat(calculator.firstNum) / parseFloat(calculator.secondNum); //converts to numbers and evaluates
 		calculator.displayValue = answer;
 		calculator.checkForSecondNum = false;
+		calculator.calculated = true;
 		return;
 	}
 }
@@ -223,26 +240,34 @@ function backspace() {
 	let length = calculator.displayValue.length;
 	let trimmed = calculator.displayValue.substring(0, length-1);
 	calculator.displayValue = trimmed;
-	if (!calculator.displayValue ) {
+	if (!calculator.displayValue) {
 		calculator.displayValue = 0;
 	}
+	//Checks for the string "Na" because "N" would be deleted on keypress.
+	if (calculator.displayValue === "Na") {
+		clear();
+	}
+}
+
+//Displays history before equals
+function history() {
+	const history = document.querySelector("#displayhistory");
+	let first = calculator.firstNum;
+	let op = calculator.operator;
+	let second = calculator.secondNum;
+		history.innerHTML = first + op + second;
 }
 
 
 /*
-1.After hitting equals and displaying answer, the next digit pressed should be the only 
-digit shown & the calculator object should reflect it appropriately.
-
-2.Create the history function.
-
-3.Create a check for the firstNum property where if firstNum.length = 14 the next
+1.Create a check for the firstNum property where if firstNum.length = 14 the next
 button pressed has to be an operator. (And push down display on font shrink)
 
-4.Round display if repeating number?
+2.Round display if repeating number?
 
-5.If - is pressed before a number it should treat/display it as a negative number(tiny -)
+3.If - is pressed before a number it should treat/display it as a negative number(tiny -)
 
-6.Keyboard functions
+4.Keyboard functions
 
-7.When NaN is displayed and delete key is pressed, clear the entire length of NaN
+5.Change the operator if a second operator is clicked?
 */
