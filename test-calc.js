@@ -4,14 +4,18 @@ const calculator = {
 	secondNum: null,
 	checkForSecondNum: false,
 	operator: null,
-	calculated: false
+	calculated: false,
+	history: null,
 };
 
 function update() {
 	const display = document.querySelector("#displaynum");
+	const history = document.querySelector("#displayhistory");
+
 	//sets the calc obj property displayValue to a maxlength
 	calculator.displayValue = String(calculator.displayValue).substring(0, 16);
 	display.innerHTML = calculator.displayValue;
+	history.innerHTML = calculator.history;
 
 	if (calculator.displayValue.length >= 15) {
 		display.style.fontSize = "24px";
@@ -162,17 +166,23 @@ function addDecimal(decimal) {
 }
 
 function signs(operator) {
-	displayValue = calculator.displayValue; 
+	if (calculator.firstNum === null || calculator.firstNum === "0" && operator === "-") {
+		calculator.displayValue = operator;
+		calculator.firstNum = operator;
+		return;
+	}
 
 	//Check if displayValue contains an operation sign
-	if(displayValue.includes("+") || 
-	    displayValue.includes("-") ||
-	    displayValue.includes("*") ||
-	    displayValue.includes("÷")) {
+	let op = calculator.operator;
+	let string = String(op);
+	if(string.includes("+") || 
+	    string.includes("-") ||
+	    string.includes("*") ||
+	    string.includes("÷")) {
 		return;
 	} else {
-		calculator.displayValue = displayValue += operator;
 		calculator.operator = operator;
+		calculator.displayValue = calculator.displayValue += operator;
 		calculator.checkForSecondNum = true;
 	}
 }
@@ -232,14 +242,16 @@ function clear() {
 	calculator.firstNum = "0";
 	calculator.secondNum = "0";
 	calculator.checkForSecondNum = false;
+	calculator.operator = null;
 	calculator.calculated = false;
+	calculator.history = null;
 }
 
 //Clear the last character pressed
 function backspace() {
 	let length = calculator.displayValue.length;
 	let trimmed = calculator.displayValue.substring(0, length-1);
-	calculator.displayValue = trimmed;
+
 	if (!calculator.displayValue) {
 		calculator.displayValue = 0;
 	}
@@ -247,15 +259,32 @@ function backspace() {
 	if (calculator.displayValue === "Na") {
 		clear();
 	}
+
+	//Checks for an operator
+	if (calculator.operator) {
+		let str = String(calculator.displayValue);
+		let end = str.charAt(str.length-1); //last character deleted
+
+		//If an operator, remove value from operator property
+		if (end === "+" ||
+			end === "-" ||
+			end === "*" ||
+			end === "÷")
+		calculator.operator = null;
+	}
+	calculator.displayValue = trimmed;
 }
 
-//Displays history before equals
+//Only runs when equal is pressed
 function history() {
 	const history = document.querySelector("#displayhistory");
 	let first = calculator.firstNum;
 	let op = calculator.operator;
 	let second = calculator.secondNum;
-		history.innerHTML = first + op + second;
+
+	calculator.history = first + op + second;
+	history.innerHTML = calculator.history;
+	calculator.operator = null;
 }
 
 
@@ -265,9 +294,11 @@ button pressed has to be an operator. (And push down display on font shrink)
 
 2.Round display if repeating number?
 
-3.If - is pressed before a number it should treat/display it as a negative number(tiny -)
+3.Allow - before the 2nd number
 
 4.Keyboard functions
 
 5.Change the operator if a second operator is clicked?
+
+6.If a negative number is the first number, the equation only calculates correctly if the operator is a +
 */
