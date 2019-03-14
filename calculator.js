@@ -234,13 +234,11 @@ function equals() {
 	}
 
 	if (displayValue.includes("*")) {
-		console.log("* first: " + calculator.firstNum + " second: " + calculator.secondNum);
 		answer = parseFloat(calculator.firstNum) * parseFloat(calculator.secondNum); //converts type to number
 		calculator.displayValue = answer;
 	}
 
 	if (displayValue.includes("÷")) {
-		console.log("÷ first: " + calculator.firstNum + " second: " + calculator.secondNum);
 		answer = parseFloat(calculator.firstNum) / parseFloat(calculator.secondNum); //converts type to number
 		calculator.displayValue = answer;
 	}
