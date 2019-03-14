@@ -224,44 +224,28 @@ function equals() {
 	displayValue = calculator.displayValue;
 
 	if (displayValue.includes("+")) {
-		calculator.firstNum = displayValue.substring(0, displayValue.indexOf("+")); //numbers before sign
-		calculator.secondNum = displayValue.split("+")[1]; //numbers afer sign
-		answer = parseFloat(calculator.firstNum) + parseFloat(calculator.secondNum); //converts to numbers and evaluates
+		answer = parseFloat(calculator.firstNum) + parseFloat(calculator.secondNum); //converts type to number
 		calculator.displayValue = answer;
-		calculator.checkForSecondNum = false;
-		calculator.calculated = true;
-		return;
 	}
 
 	if (displayValue.includes("-")) {
-		calculator.firstNum = displayValue.substring(0, displayValue.indexOf("-")); //numbers before sign
-		calculator.secondNum = displayValue.split("-")[1]; //numbers afer sign
-		answer = parseFloat(calculator.firstNum) - parseFloat(calculator.secondNum); //converts to numbers and evaluates
+		answer = parseFloat(calculator.firstNum) - parseFloat(calculator.secondNum); //converts type to number
 		calculator.displayValue = answer;
-		calculator.checkForSecondNum = false;
-		calculator.calculated = true;
-		return;
 	}
 
 	if (displayValue.includes("*")) {
-		calculator.firstNum = displayValue.substring(0, displayValue.indexOf("*")); //numbers before sign
-		calculator.secondNum = displayValue.split("*")[1]; //numbers afer sign
-		answer = parseFloat(calculator.firstNum) * parseFloat(calculator.secondNum); //converts to numbers and evaluates
+		console.log("* first: " + calculator.firstNum + " second: " + calculator.secondNum);
+		answer = parseFloat(calculator.firstNum) * parseFloat(calculator.secondNum); //converts type to number
 		calculator.displayValue = answer;
-		calculator.checkForSecondNum = false;
-		calculator.calculated = true;
-		return;
 	}
 
 	if (displayValue.includes("÷")) {
-		calculator.firstNum = displayValue.substring(0, displayValue.indexOf("÷")); //numbers before sign
-		calculator.secondNum = displayValue.split("÷")[1]; //numbers afer sign
-		answer = parseFloat(calculator.firstNum) / parseFloat(calculator.secondNum); //converts to numbers and evaluates
+		console.log("÷ first: " + calculator.firstNum + " second: " + calculator.secondNum);
+		answer = parseFloat(calculator.firstNum) / parseFloat(calculator.secondNum); //converts type to number
 		calculator.displayValue = answer;
-		calculator.checkForSecondNum = false;
-		calculator.calculated = true;
-		return;
 	}
+	calculator.checkForSecondNum = false;
+	calculator.calculated = true;
 }
 
 function squareroot() {
@@ -321,6 +305,8 @@ function history() {
 	calculator.history = first + op + second;
 	history.innerHTML = calculator.history;
 	calculator.operator = null;
+	calculator.firstNum = calculator.displayValue.toString();
+	calculator.secondNum = null;
 }
 
 
@@ -329,6 +315,4 @@ function history() {
 button pressed has to be an operator. (And push down display on font shrink)
 
 2.Keyboard functions
-
-3.When using negative numbers, the equation only calculates correctly if the operator is a plus sign; Equations such as -3 - -3 produce NAN
 */
