@@ -25,7 +25,7 @@ function update() {
 		display.style.fontSize = "32px";
 	}
 }
-update();
+update(); //call to display 0 on load
 
 const allButtons = document.querySelector(".calcbtns");
 //Adds a click event listener to all .calcbtn children
@@ -57,7 +57,7 @@ allButtons.addEventListener("click", function (e) {
 
     if (pressed.classList.contains("equals")) {
     	equals(pressed.value);
-    	history();
+    	showHistory();
     	update();
     	return;
     }
@@ -83,12 +83,10 @@ allButtons.addEventListener("click", function (e) {
 
 function showDigit(digit) {
 	const displayValue = calculator.displayValue;
-	//If an answer is displayed check for a second number, and flag calculated as false
 	if (calculator.calculated === true) {
 		if (calculator.checkForSecondNum === true) {
 			calculator.calculated = false;
 		} else {
-		//if answer is displayed, but we are not waiting on the secondNum, append digit to firstNum
 		calculator.calculated = false;
 		calculator.firstNum = digit;
 		calculator.displayValue = calculator.firstNum;
@@ -99,7 +97,7 @@ function showDigit(digit) {
 	if (calculator.checkForSecondNum === true) {
 
 		if (calculator.displayValue.includes("+")) {
-			calculator.secondNum = displayValue.split("+")[1]; //numbers after sign
+			calculator.secondNum = displayValue.split("+")[1]; 
 		}
 
 		if (calculator.displayValue.includes("-")) {
@@ -113,7 +111,8 @@ function showDigit(digit) {
 			if (calculator.firstNum.includes("-")) {
 				let hold = displayValue.split("-")[1];
 				calculator.secondNum = displayValue.split("-")[1]; 
-				calculator.secondNum = calculator.secondNum.split(hold)[1]; //everything after hold
+                                //everything after hold
+				calculator.secondNum = calculator.secondNum.split(hold)[1]; 
 			} 
 			//If the 1st number ISN'T negative & the operator is a minus sign
 			if (!calculator.firstNum.includes("-") && calculator.operator === "-") {
@@ -131,11 +130,11 @@ function showDigit(digit) {
 		}
 
 		if (calculator.displayValue.includes("*")) {
-			calculator.secondNum = displayValue.split("*")[1]; //numbers after sign
+			calculator.secondNum = displayValue.split("*")[1];
 		}
 
 		if (calculator.displayValue.includes("÷")) {
-			calculator.secondNum = displayValue.split("÷")[1]; //numbers after sign
+			calculator.secondNum = displayValue.split("÷")[1];
 		}
 	}
 	//Appends digit to secondNum is firstNum is true
@@ -144,7 +143,7 @@ function showDigit(digit) {
 		calculator.secondNum = calculator.secondNum + digit;
 		return;
 	}
-	//If the display is 0, display the pressed number instead, otherwise append the next number
+	//Display next number
 	if (displayValue === "0") {
 		calculator.displayValue = digit;
 		calculator.firstNum = digit;
@@ -158,7 +157,7 @@ function addDecimal(decimal) {
 	displayValue = calculator.displayValue;
 	secondNum = calculator.secondNum;
 
-	//If there isn't a decimal in displayValue, add one & store in firstNum property of calc obj
+	//Add decimal 
 	if(!displayValue.includes(decimal)) {
 		calculator.displayValue = displayValue += decimal;
 		calculator.firstNum = displayValue += decimal;
@@ -169,23 +168,23 @@ function addDecimal(decimal) {
 		return;
 	}
 
-	//If there is a decimal in the firstNum, append decimal to secondNum
+	//Append decimal to secondNum
 	if (calculator.checkForSecondNum === true) {
 
 		if (displayValue.includes("+")) {
-			calculator.secondNum = displayValue.split("+")[1] += decimal; //numbers afer sign
+			calculator.secondNum = displayValue.split("+")[1] += decimal;
 		}
 
 		if (displayValue.includes("-")) {
-			calculator.secondNum = displayValue.split("-")[1] += decimal; //numbers afer sign
+			calculator.secondNum = displayValue.split("-")[1] += decimal;
 		}
 
 		if (displayValue.includes("*")) {
-			calculator.secondNum = displayValue.split("*")[1] += decimal; //numbers afer sign
+			calculator.secondNum = displayValue.split("*")[1] += decimal;
 		}
 
 		if (displayValue.includes("÷")) {
-			calculator.secondNum = displayValue.split("÷")[1] += decimal; //numbers afer sign
+			calculator.secondNum = displayValue.split("÷")[1] += decimal;
 		}
 
 		calculator.displayValue = displayValue += decimal;
@@ -208,7 +207,6 @@ function signs(operator) {
 		calculator.checkForSecondNum = true;
 		return;
 	}
-	//If there is an operator value, check if secondNum is negative
 	if (calculator.checkForSecondNum === true && operator === "-") {
 		if (calculator.secondNum === null) {
 			calculator.displayValue = calculator.displayValue + operator;
@@ -221,25 +219,23 @@ function signs(operator) {
 }
 
 function equals() {
-	displayValue = calculator.displayValue;
-
-	if (displayValue.includes("+")) {
-		answer = parseFloat(calculator.firstNum) + parseFloat(calculator.secondNum); //converts type to number
+	if (calculator.operator.includes("+")) {
+		answer = parseFloat(calculator.firstNum) + parseFloat(calculator.secondNum);
 		calculator.displayValue = answer;
 	}
 
-	if (displayValue.includes("-")) {
-		answer = parseFloat(calculator.firstNum) - parseFloat(calculator.secondNum); //converts type to number
+	if (calculator.operator.includes("-")) {
+		answer = parseFloat(calculator.firstNum) - parseFloat(calculator.secondNum); 
 		calculator.displayValue = answer;
 	}
 
-	if (displayValue.includes("*")) {
-		answer = parseFloat(calculator.firstNum) * parseFloat(calculator.secondNum); //converts type to number
+	if (calculator.operator.includes("*")) {
+		answer = parseFloat(calculator.firstNum) * parseFloat(calculator.secondNum); 
 		calculator.displayValue = answer;
 	}
 
-	if (displayValue.includes("÷")) {
-		answer = parseFloat(calculator.firstNum) / parseFloat(calculator.secondNum); //converts type to number
+	if (calculator.operator.includes("÷")) {
+		answer = parseFloat(calculator.firstNum) / parseFloat(calculator.secondNum); 
 		calculator.displayValue = answer;
 	}
 	calculator.checkForSecondNum = false;
@@ -294,7 +290,7 @@ function backspace() {
 }
 
 //Only runs when equal is pressed
-function history() {
+function showHistory() {
 	const history = document.querySelector("#displayhistory");
 	let first = calculator.firstNum;
 	let op = calculator.operator;
@@ -302,15 +298,7 @@ function history() {
 
 	calculator.history = first + op + second;
 	history.innerHTML = calculator.history;
-	calculator.operator = null;
 	calculator.firstNum = calculator.displayValue.toString();
 	calculator.secondNum = null;
+	calculator.operator = null;
 }
-
-
-/*
-1.Create a check for the firstNum property where if firstNum.length = 14 the next
-button pressed has to be an operator. (And push down display on font shrink)
-
-2.Keyboard functions
-*/
