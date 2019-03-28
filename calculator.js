@@ -189,7 +189,6 @@ function showDigit(digit) {
 	}
 
 	if (calculator.checkForSecondNum === true) {
-		calculator.displayValue = displayValue + digit;
 
 		if (calculator.displayValue.includes("+")) {
 			calculator.secondNum = displayValue.split("+")[1]; 
@@ -217,9 +216,12 @@ function showDigit(digit) {
 			//If the 1st number is positive & the operator is a minus sign
 			if (!calculator.firstNum.includes("-") && calculator.operator === "-") {
 				calculator.secondNum = displayValue.split("-")[1]; 
+			}
+			//If the 2nd number is negative & the operator is a minus sign
+			if (count === 2 && !calculator.firstNum.includes("-")) {
+				calculator.secondNum = displayValue.split("-")[1]; 
 				calculator.secondNum = "-" + calculator.secondNum + digit;
 			}
-
 			//If only the 2nd number is negative
 			if (!calculator.firstNum.includes("-") && !calculator.operator === "-") {
 				calculator.secondNum = "-" + calculator.secondNum.split("-")[1];
@@ -237,6 +239,7 @@ function showDigit(digit) {
 	//Appends digit to secondNum is firstNum is true
 	if (calculator.checkForSecondNum) {
 		calculator.displayValue = displayValue + digit;
+		calculator.secondNum = calculator.secondNum + digit;
 		return;
 	}
 	//Display next number
