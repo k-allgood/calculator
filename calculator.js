@@ -1,11 +1,11 @@
 const calculator = {
 	displayValue: "0",
-	firstNum: null,
+	firstNum: "0",
 	secondNum: null,
 	checkForSecondNum: false,
 	operator: null,
 	calculated: false,
-	history: null,
+	history: null
 };
 
 function update() {
@@ -26,12 +26,105 @@ function update() {
 	}
 }
 update(); //call to display 0 on load
+keyHandler();
+btnHandler();
 
+function keyHandler(e) {
+	document.onkeydown = function(e) {
+	//const calcBtns = document.querySelector(".calcbtns");
+	const btnList = document.querySelectorAll(".btn");
+	let keyValues = [];
+	//let btnClass = [];
+	//Get every button value with .btn class
+	for (let i = 0; i < btnList.length; i++) {
+		keyValues.push(btnList[i].value);
+		//btnClass.push(btnList[i].classList);
+	}
+	
+	if (keyValues.includes(e.key)) {
+		//The key value matches a button element value
+		if (e.key === "*" || e.key === "-" || e.key === "+") {
+			signs(e.key);
+			update();
+			return;
+		}
+		switch(e.keyCode) {
+		//Decimal
+			case 190:
+				addDecimal(e.key);
+				update();
+				break;
+		//Numbers
+			case 48:
+			case 49:
+			case 50:
+			case 51:
+			case 52:
+			case 53:
+			case 54:
+			case 55:
+			case 56:
+			case 57:
+				showDigit(e.key);
+				update();
+				break;
+		//Slash
+			case 191:
+				signs("÷");
+    			update();
+				break;
+			}
+		} else {
+			//Key values that don't match a button value
+			switch(e.keyCode) {
+			//A,S,D,X
+				case 65:
+					signs("+");
+    				update();
+					break;
+				case 68:
+					signs("÷");
+    				update();
+					break;
+				case 83:
+					signs("-");
+    				update();
+					break;
+				case 88:
+					signs("*");
+    				update();
+					break;
+			//Enter
+				case 13:
+					equals("=");
+    				showHistory();
+    				update();
+    				break;
+    		//Backspace
+    			case 8:
+    				backspace("⌫");
+    				update();
+    				break;
+    		//Clear (Tab)
+    			case 9:
+    				clear();
+    				update();
+    				break;
+    		//Backtick (squareroot)
+    			case 192:
+    				squareroot();
+    				update();
+    				break;	
+			}
+		}//end else
+	}
+}
+
+function btnHandler() {
 const allButtons = document.querySelector(".calcbtns");
 //Adds a click event listener to all .calcbtn children
 allButtons.addEventListener("click", function (e) {
 	const pressed = e.target; //button clicked
-
 	//does not contain btn class
     if (!pressed.classList.contains("btn")) {
     	return; 
@@ -79,7 +172,8 @@ allButtons.addEventListener("click", function (e) {
     	update();
     }
 
-});
+	});
+}
 
 function showDigit(digit) {
 	const displayValue = calculator.displayValue;
@@ -95,11 +189,12 @@ function showDigit(digit) {
 	}
 
 	if (calculator.checkForSecondNum === true) {
+		calculator.displayValue = displayValue + digit;
 
 		if (calculator.displayValue.includes("+")) {
 			calculator.secondNum = displayValue.split("+")[1]; 
 		}
-
+		//If the display includes a - sign
 		if (calculator.displayValue.includes("-")) {
 			//Count the - in the display
 			let count = calculator.displayValue.split("-").length-1;
@@ -108,24 +203,26 @@ function showDigit(digit) {
 				calculator.secondNum = calculator.secondNum + digit;
 				return;
 			}
-			if (calculator.firstNum.includes("-")) {
+			if (count === 1 && calculator.operator === "-") {
+				//Safe to split at the - sign
+				calculator.secondNum = displayValue.split("-")[1];
+			}
+			//If the 1st number is negative & the operator is a minus sign
+			if (calculator.firstNum.includes("-") && calculator.operator === "-") {
 				let hold = displayValue.split("-")[1];
-				calculator.secondNum = displayValue.split("-")[1]; 
-                                //everything after hold
-				calculator.secondNum = calculator.secondNum.split(hold)[1]; 
-			} 
-			//If the 1st number ISN'T negative & the operator is a minus sign
+				console.log(calculator.displayValue);
+				calculator.secondNum = displayValue.split(hold)[1]; //everything after hold
+				calculator.secondNum = calculator.secondNum.substr(1); //Removes - added from split
+			}
+			//If the 1st number is positive & the operator is a minus sign
 			if (!calculator.firstNum.includes("-") && calculator.operator === "-") {
 				calculator.secondNum = displayValue.split("-")[1]; 
+				calculator.secondNum = "-" + calculator.secondNum + digit;
 			}
+
 			//If only the 2nd number is negative
 			if (!calculator.firstNum.includes("-") && !calculator.operator === "-") {
 				calculator.secondNum = "-" + calculator.secondNum.split("-")[1];
-			}
-			//If there are two "-" in the display and the 1st number is positive
-			if (count === 2 && !calculator.firstNum.includes("-")) {
-				let numbers = displayValue.split("-")[1]; 
-				calculator.secondNum = "-" + numbers;
 			}
 		}
 
@@ -140,7 +237,6 @@ function showDigit(digit) {
 	//Appends digit to secondNum is firstNum is true
 	if (calculator.checkForSecondNum) {
 		calculator.displayValue = displayValue + digit;
-		calculator.secondNum = calculator.secondNum + digit;
 		return;
 	}
 	//Display next number
@@ -160,7 +256,7 @@ function addDecimal(decimal) {
 	//Add decimal 
 	if(!displayValue.includes(decimal)) {
 		calculator.displayValue = displayValue += decimal;
-		calculator.firstNum = displayValue += decimal;
+		calculator.firstNum = displayValue;
 		return;
 		}
 
@@ -266,7 +362,8 @@ function backspace() {
 	if (!calculator.displayValue) {
 		calculator.displayValue = 0;
 	}
-	//Checks for the string "Na" because "N" would be deleted on keypress.
+	//Checks for the string "Na" because "N" would be deleted on keypress
+	//NaN displays when taking square root of negative
 	if (calculator.displayValue === "Na") {
 		clear();
 	}
@@ -302,3 +399,13 @@ function showHistory() {
 	calculator.secondNum = null;
 	calculator.operator = null;
 }
+
+
+/*
+1.Calculator sometimes displays incorrect results (usually when using keyboard).
+Often it will display the correct results after showing incorrect results,
+if the equation is rerun. 
+
+2.Issue when subtracting negative numbers: secondNum value is getting constantly updated w/
+last digit pressed.
+*/
