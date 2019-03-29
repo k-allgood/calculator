@@ -31,14 +31,11 @@ btnHandler();
 
 function keyHandler(e) {
 	document.onkeydown = function(e) {
-	//const calcBtns = document.querySelector(".calcbtns");
 	const btnList = document.querySelectorAll(".btn");
 	let keyValues = [];
-	//let btnClass = [];
 	//Get every button value with .btn class
-	for (let i = 0; i < btnList.length; i++) {
+	for (i = 0; i < btnList.length; i++) {
 		keyValues.push(btnList[i].value);
-		//btnClass.push(btnList[i].classList);
 	}
 	
 	if (keyValues.includes(e.key)) {
@@ -113,6 +110,7 @@ function keyHandler(e) {
     		//Backtick (squareroot)
     			case 192:
     				squareroot();
+    				showHistory();
     				update();
     				break;	
 			}
@@ -169,6 +167,7 @@ allButtons.addEventListener("click", function (e) {
 
     if (pressed.classList.contains("sqrt")) {
     	squareroot();
+    	showHistory();
     	update();
     }
 
@@ -209,18 +208,8 @@ function showDigit(digit) {
 			//If the 1st number is negative & the operator is a minus sign
 			if (calculator.firstNum.includes("-") && calculator.operator === "-") {
 				let hold = displayValue.split("-")[1];
-				console.log(calculator.displayValue);
 				calculator.secondNum = displayValue.split(hold)[1]; //everything after hold
 				calculator.secondNum = calculator.secondNum.substr(1); //Removes - added from split
-			}
-			//If the 1st number is positive & the operator is a minus sign
-			if (!calculator.firstNum.includes("-") && calculator.operator === "-") {
-				calculator.secondNum = displayValue.split("-")[1]; 
-			}
-			//If the 2nd number is negative & the operator is a minus sign
-			if (count === 2 && !calculator.firstNum.includes("-")) {
-				calculator.secondNum = displayValue.split("-")[1]; 
-				calculator.secondNum = "-" + calculator.secondNum + digit;
 			}
 			//If only the 2nd number is negative
 			if (!calculator.firstNum.includes("-") && !calculator.operator === "-") {
@@ -389,26 +378,21 @@ function backspace() {
 	}
 }
 
-//Only runs when equal is pressed
 function showHistory() {
 	const history = document.querySelector("#displayhistory");
 	let first = calculator.firstNum;
 	let op = calculator.operator;
 	let second = calculator.secondNum;
 
+	if (op === null && second === null) {
+		calculator.history = "√" + first;
+		history.innerHTML = calculator.history;
+		calculator.firstNum = calculator.displayValue.toString();
+		return;
+	} 
 	calculator.history = first + op + second;
 	history.innerHTML = calculator.history;
 	calculator.firstNum = calculator.displayValue.toString();
 	calculator.secondNum = null;
 	calculator.operator = null;
 }
-
-
-/*
-1.Calculator sometimes displays incorrect results (usually when using keyboard).
-Often it will display the correct results after showing incorrect results,
-if the equation is rerun. 
-
-2.Issue when subtracting negative numbers: secondNum value is getting constantly updated w/
-last digit pressed.
-*/
